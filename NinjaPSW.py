@@ -8,7 +8,7 @@ class Server():
 		self.current_directory = c_dir
 		#os._exit(0)
 
-	# Called by the webpage function to indentify if either return a index file or a directory listing
+	# the webpage function call this function(read_index) to indentify if either return an index file or a directory listing
 	def read_index(self):
 		files = [file for root, dirz, file in os.walk(self.current_directory)][0]
 		for index in files:

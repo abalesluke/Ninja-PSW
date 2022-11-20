@@ -112,3 +112,4 @@ if(__name__=="__main__"):
 	print(f"{'Serv-Info':=^22}")
 	print(f"\nRunning on:\n- IP: {serv_addr}\n- PORT: {serv_port}\n- DIR: {serv_dir}\n")
 	print(f"{'Serv-Info':=^22}")
+

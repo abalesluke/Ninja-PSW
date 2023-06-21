@@ -15,10 +15,10 @@ class Server():
 			if(index in ['index.html','index.php']):
 				return open(index).read()
 			else:
-				page = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'></head><h2>Simple Web Server</h2> Created by: <a href='https://www.facebook.com/profile.php?id=100085378914881'>Anikin Luke Abales</a><hr>"
+				page = "<html> <head> <meta name='viewport' content='width=device-width, initial-scale=1'> <title>Ninja-PSW - Indexing</title> </head> <style> *{ font-family: sans-serif; } body{ margin:0; height: 100vh; background-color:rgb(0,0,0,0.2); } .banner{ margin-top:10px; } .banner h2{ text-align: center; font-weight: bold; font-size:28px; } .banner p, .items{ margin-left: 15px; font-size:18px; } </style> <body> <div class='banner''> <h2>Simple Web Server</h2> <p>Created by: <a href='https://www.facebook.com/profile.php?id=100085378914881'>Anikin Luke Abales</a></p><hr> </div>"
 				for filename in files:
-					page+=f"<a href='{filename}'>{filename}</a><br>"
-				page+="</html>"
+					page+=f"<a class='items' href='{filename}'>{filename}</a><br>"
+				page+="</body></html>"
 				return page
 
 	# Looping section where webpage is returned/display to the client.
@@ -27,10 +27,18 @@ class Server():
 		response = c_sock.recv(1024).decode()
 		web_dir = response.split("/")[1]
 		web_dir = web_dir.replace(" HTTP","")
+		web_file = web_dir.split(".")
+		print(web_file[1])
+		img_file_types = ['jpg','png','jpeg']
 
 		if(web_dir == ''): # return/display the index file from the "read_index" function.
 			index = self.read_index()
 			webpage = "HTTP/1.1 200 OK\n\n"+index
+			c_sock.sendall(webpage.encode())
+			c_sock.close()
+		elif(web_file[1] in img_file_types):
+			current_file = open(self.current_directory+web_dir).read()
+			webpage = f"HTTP/1.0 200 OK\nContent-Type: image/png\nContent-Length: {os.path.getsize(self.current_directory+web_dir)}\n\n{current_file}"
 			c_sock.sendall(webpage.encode())
 			c_sock.close()
 		else:

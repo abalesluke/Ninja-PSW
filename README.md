@@ -10,7 +10,8 @@ A simple Web Server created with python3
 
 ## Images
 * Result When No index.html found in current directory/specified server directory
-![No_Index](https://github.com/abalesluke/abalesluke/blob/main/images/NINJA_PSW_NO_INDEX.png?raw=true)
+![image](https://github.com/abalesluke/Ninja-PSW/assets/108006281/34193bfe-d2be-4557-8c19-d9ef20ca9c91)
+
 
 
 ### Credits meeee!!!!

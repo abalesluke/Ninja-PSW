@@ -1,4 +1,4 @@
-import socket, threading, os, sys
+import socket, threading, os, sys, base64
 
 # Server Class
 class Server():
@@ -8,6 +8,13 @@ class Server():
 		self.current_directory = c_dir
 		#os._exit(0)
 
+	def __chkExt(self, filename):
+		file_ext = filename.split(".")
+		if(len(file_ext) > 1):
+			return file_ext[1]
+		else:
+			return False
+		
 	# the webpage function call this function(read_index) to indentify if either return an index file or a directory listing
 	def read_index(self):
 		files = [file for root, dirz, file in os.walk(self.current_directory)][0]
@@ -27,8 +34,6 @@ class Server():
 		response = c_sock.recv(1024).decode()
 		web_dir = response.split("/")[1]
 		web_dir = web_dir.replace(" HTTP","")
-		web_file = web_dir.split(".")
-		print(web_file[1])
 		img_file_types = ['jpg','png','jpeg']
 
 		if(web_dir == ''): # return/display the index file from the "read_index" function.
@@ -36,9 +41,13 @@ class Server():
 			webpage = "HTTP/1.1 200 OK\n\n"+index
 			c_sock.sendall(webpage.encode())
 			c_sock.close()
-		elif(web_file[1] in img_file_types):
-			current_file = open(self.current_directory+web_dir).read()
-			webpage = f"HTTP/1.0 200 OK\nContent-Type: image/png\nContent-Length: {os.path.getsize(self.current_directory+web_dir)}\n\n{current_file}"
+		elif(web_dir == '-fs'):
+			return 'stop'
+		elif(self.__chkExt(web_dir) in img_file_types):
+			with open(self.current_directory+web_dir, "rb") as f:
+				file_content = base64.b64encode(f.read()).decode('utf-8')
+			webpage = f"HTTP/1.1 200 OK\nContent-Type: text/html\n\n"
+			webpage+='<html onkeydown="nullify(this);" style="height: 100%;"><head><meta name="viewport" content="width=device-width, minimum-scale=0.1"><title>'+web_dir+'</title></head><script>function ctrlShiftKey(e, keyCode) { return e.ctrlKey && e.shiftKey && e.keyCode === keyCode.charCodeAt(0); } nullify(e){ if( event.keyCode === 123 || ctrlShiftKey(e, "I") || ctrlShiftKey(e, "J") || ctrlShiftKey(e, "C") || (e.ctrlKey && e.keyCode === "U".charCodeAt(0)) ) return false; };</script><body onkeydown="nullify(this);" style="margin: 0px; background: #0e0e0e; height: 100vh; display:flex; align-items:center;"><img style="display: block;-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;" src="data:image/png;base64;, '+file_content+'"></body></html>'
 			c_sock.sendall(webpage.encode())
 			c_sock.close()
 		else:
